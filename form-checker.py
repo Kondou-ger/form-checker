@@ -79,8 +79,7 @@ def scansite():
 		print("URL must be like \"http://domain.tld/document.html\".")
 		sys.exit(2)
 	
-	if showcase:
-		print("Checking if website is online")
+	print_if_showcase("Checking if website is online")
 	
 	conn = http.client.HTTPConnection(host, port)
 	try:
@@ -96,7 +95,7 @@ def scansite():
 	except urllib.error.HTTPError as hndl:
 		resp = hndl
 		if showcase:
-			print("ACHTUNG! Error-Page %s!" % hndl.code)
+			print("Attention! Error-Page %s!" % hndl.code)
 	
 	try:
 		resp = resp.read()

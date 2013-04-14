@@ -10,68 +10,69 @@ if ( in_array( strtolower( ini_get( 'magic_quotes_gpc' ) ), array( '1', 'on' ) )
 }
 
 # Invulnerable SQL-field
-if ($_POST["nick"] == "" && $_POST["pass"] == "")
-	echo("<form method=\"POST\" action=\"test-site.php\">\n
-		<input type=\"text\" name=\"nick\">\n
-		<input type=\"password\" name=\"pass\">\n
-		<input type=\"submit\" value=\"Login\">\n
-		</form>\n");
-else
-	echo("Wrong user!");
+if ($_POST["nick"] == "" && $_POST["pass"] == ""): ?>
+<form method="POST" action="test-site.php">
+	<input type="text" name=\"nick\">
+	<input type="password" name="pass">
+	<input type="submit" value="Login">
+</form>
+<?php else: ?>
+Wrong user!
+<?php endif; ?>
+<hr>
 
-echo("<hr>");
+<?php # Invulnerable SQL and/or XSS-field
+if ($_GET["searchstring"] == ""): ?>
+<form method="GET" action="test-site.php">
+	<input type="text" name="searchstring">
+	<input type="submit" value="Search">
+</form>
+<?php else: ?>
+Result:<br>
+Result 1<br><br>
+Result 2<br><br>
+Result 3<br><br>
+Result 4<br><br>
+Result 5<br><br>
+Result 6<br><br>
+Result 7<br><br>
+Result 8<br><br>
+<? endif; ?>
+<hr>
 
-# Invulnerable SQL and/or XSS-field
-if ($_GET["searchstring"] == "")
-	echo("<form method=\"GET\" action=\"test-site.php\">\n
-		<input type=\"text\" name=\"searchstring\">\n
-		<input type=\"submit\" value=\"Search\">\n
-		</form>\n");
-else
-	echo("Result:<br>\n
-		Result 1<br><br>\n
-		Result 2<br><br>\n
-		Result 3<br><br>\n
-		Result 4<br><br>\n
-		Result 5<br><br>\n
-		Result 6<br><br>\n
-		Result 7<br><br>\n
-		Result 8<br><br>\n");
-
-echo("<hr>");
-
-# Vurnerable XSS-field (GET)
+<?php # Vurnerable XSS-field (GET)
 echo("XSS GET<br>");
-if ($_GET["getechotext"] == "")
-	echo("<form method=\"GET\" action=\"test-site.php\">\n
-		<input type=\"text\" name=\"getechotext\" value=\"Text to echo\">\n
-		<input type=\"submit\" value=\"Send\">\n
-		</form>\n");
-else
-	echo("Your text was: " . $_GET["getechotext"] . ". <a href=\"test-site.php\">Again?</a>");
+if ($_GET["getechotext"] == ""): ?>
+<form method="GET" action="test-site.php">
+	<input type="text" name="getechotext" value="Text to echo">
+	<input type="submit">
+</form>
+<?php else:
+Your text was: " . $_GET["getechotext"] . ". <a href=\"test-site.php\">Again?</a>");
+endif;
+?>
+<hr>
 
-echo("<hr>");
-
-# Vulnerable XSS-field (POST)
+<?php # Vulnerable XSS-field (POST)
 echo("XSS POST<br>");
-if ($_POST["postechotext"] == "")
-	echo("<form method=\"POST\" action=\"test-site.php\">\n
-		<input type=\"text\" name=\"postechotext\" value=\"Text to echo\">\n
-		<input type=\"submit\" value=\"Send\">\n
-		</form>\n");
-else
+if ($_POST["postechotext"] == ""): ?>
+<form method="POST" action="test-site.php">
+	<input type="text" name="postechotext" value="Text to echo">
+	<input type="submit">
+</form>
+<?php else:
 	echo("Your text was:" . $_POST["postechotext"] . ". <a href=\"test-site.php\">Again?</a>");
+endif; ?>
+<hr>
 
-echo("<hr>");
-
-# Vulnerable SQL-field (GET)
+<?php # Vulnerable SQL-field (GET)
 echo("SQL GET<br>");
-if ($_GET["getsearch"] == "")
-	echo("<form method=\"GET\" action=\"test-site.php\">\n
-		<input type=\"text\" name=\"getsearch\">\n
-		<input type=\"submit\" value=\"Search\">\n
-		</form>\n");
-else {
+if ($_GET["getsearch"] == ""): ?>
+<form method="GET" action="test-site.php">
+	<input type="text" name="getsearch">
+	<input type="submit" value="Search">
+</form>
+<?php else:
 	# Connect to database
 	mysql_connect("localhost", "root", "") or die("No connection possible.");
 	mysql_select_db("test");
@@ -79,18 +80,17 @@ else {
 	echo("Result:<br>");
 	while ($row = mysql_fetch_row($query))
 		echo($row[0] . "<br>");
-	}
-		
-echo("<hr>");
+endif; ?>
+<hr>
 
-# Vulnerable SQL-field (POST)
+<?php # Vulnerable SQL-field (POST)
 echo("SQL POST<br>");
-if ($_POST["postsearch"] == "")
-	echo("<form method=\"POST\" action=\"test-site.php\">\n
-		<input type=\"text\" name=\"postsearch\">\n
-		<input type=\"submit\" value=\"Search\">\n
-		</form>\n");
-else {
+if ($_POST["postsearch"] == ""): ?>
+<form method="POST" action="test-site.php">
+	<input type="text" name="postsearch">
+	<input type="submit" value="Search">
+</form>
+<?php else:
 	# Connect to database
 	mysql_connect("localhost", "root", "") or die("No connection possible.");
 	mysql_select_db("test");
@@ -98,8 +98,6 @@ else {
 	echo("Result:<br>");
 	while ($row = mysql_fetch_row($query))
 		echo($row[0] . "<br>");
-}
-
-?>
+endif; ?>
 </body>
 </html>
