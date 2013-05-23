@@ -69,8 +69,7 @@ def scansite():
 	[ [ ["http://www.example.com/", "querystring", "querynum"], ["http://www.example.com/", "querysearch"] ],
 	[ ["http://www.example.com/login.php", "username", "password"], ["http://www.example.com/avatar.php", "file", "avatar"] ] ]
 	"""
-	if showcase:
-		print("Splitting websitestring")
+	print_if_verbose("Splitting websitestring")
 	url = urllib.parse.urlparse(site)
 	host = url.hostname
 	path = url.path
@@ -79,7 +78,7 @@ def scansite():
 		print("URL must be like \"http://domain.tld/document.html\".")
 		sys.exit(2)
 	
-	print_if_showcase("Checking if website is online")
+	print_if_verbose("Checking if website is online")
 	
 	conn = http.client.HTTPConnection(host, port)
 	try:
@@ -94,8 +93,7 @@ def scansite():
 		resp = urllib.request.urlopen(req)
 	except urllib.error.HTTPError as hndl:
 		resp = hndl
-		if showcase:
-			print("Attention! Error-Page %s!" % hndl.code)
+		print_if_verbose("Attention! Error-Page %s!" % hndl.code)
 	
 	try:
 		resp = resp.read()
@@ -104,8 +102,7 @@ def scansite():
 		sys.exit(2)
 	page = textdecode(resp)
 
-	if showcase:
-		print("Analyzing website for forms")
+	print_if_verbose("Analyzing website for forms")
 
 	if page.find("<form",0) == -1:
 		print("No forms on this site.")
@@ -134,12 +131,12 @@ def scansite():
 		
 	conn.close()
 
-	print_if_showcase("Found forms:\n", forms)
+	print_if_verbose("Found forms:\n", forms)
 	return forms
 
 def get_check(varlist, i):
 
-	print_if_showcase("Checking GET-forms for XSS- and/or SQL-injections.")
+	print_if_verbose("Checking GET-forms for XSS- and/or SQL-injections.")
 	while i <= 2:
 		for form in varlist:
 			if urllib.parse.urlparse(form[0]).hostname: # If action is a full URL ...
@@ -160,9 +157,9 @@ def get_check(varlist, i):
 					path = path + name + "=" + sqlstring[2] + "&"
 			conn = http.client.HTTPConnection(host, port)
 			if i == 1 or i == 0:
-				print_if_showcase("Sending XSS strings")
+				print_if_verbose("Sending XSS strings")
 			else:
-				print_if_showcase("Sending SQL strings") 
+				print_if_verbose("Sending SQL strings") 
 			conn.request("GET", path)
 			check_success(textdecode(conn.getresponse().read()), form, i)
 			conn.close()
@@ -175,13 +172,13 @@ def get_check(varlist, i):
 	
 def post_check(varlist, i):
 
-	print_if_showcase("Checking POST-forms for XSS- and/or SQL-injections.")
+	print_if_verbose("Checking POST-forms for XSS- and/or SQL-injections.")
 	while i <= 2:
 		for form in varlist:
 			if i == 1 or i == 0:
-				print_if_showcase("Sending XSS strings")
+				print_if_verbose("Sending XSS strings")
 			else:
-				print_if_showcase("Sending SQL strings")
+				print_if_verbose("Sending SQL strings")
 
 			url = urllib.parse.urlparse(site)
 			if form[0] not in url.query: # If the website has a query ...
@@ -230,24 +227,24 @@ def check_success(source, form, i):
 	global vulnerable
 
 	if i <= 1:
-		print_if_showcase("Checking if XSS succesfull")
+		print_if_verbose("Checking if XSS succesfull")
 
 		if xssstring[0] not in source:
-			print_if_showcase("XSS not possible!" )
+			print_if_verbose("XSS not possible!" )
 		else:
-			print_if_showcase("XSS succesfull at form %s!" % form)
+			print_if_verbose("XSS succesfull at form %s!" % form)
 			vulnerable[0][0] = True
 			vulnerable[0].append(form[1])
 
 	if i >= 1:
-		print_if_showcase("Checking if SQL-injection succesfull")
+		print_if_verbose("Checking if SQL-injection succesfull")
 
 		if sqlstring[0] in source and " UNION SELECT " not in source:
-			print_if_showcase("SQL-injection succesfull at form %s!" % form)
+			print_if_verbose("SQL-injection succesfull at form %s!" % form)
 			vulnerable[1][0] = True
 			vulnerable[1].append(form[1])
 		else:
-			print_if_showcase("SQL-injection not possible!" )
+			print_if_verbose("SQL-injection not possible!" )
 
 
 def after_scan():
@@ -281,8 +278,8 @@ def textdecode(data):
 			print("Website:", data[:200])
 	return page
 
-def print_if_showcase(string):
-	if showcase:
+def print_if_verbose(string):
+	if verbose:
 		print(string)
 
 if __name__ == "__main__":
